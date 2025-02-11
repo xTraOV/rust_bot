@@ -33,7 +33,13 @@ class DiscordKitBot(commands.Bot):
         # Load cogs
         await self.load_extension('src.cogs.kit_commands')
         self.logger.info('Bot cogs loaded successfully')
+        
+        # Sync commands with Discord
+        try:
+            synced = await self.tree.sync()
+            self.logger.info(f'Synced {len(synced)} command(s)')
+        except Exception as e:
+            self.logger.error(f'Failed to sync commands: {e}')
 
     async def on_ready(self):
-        self.logger.info(f'Logged in as {self.user} (ID: {self.user.id})')
-        await self.tree.sync() 
+        self.logger.info(f'Logged in as {self.user} (ID: {self.user.id})') 
