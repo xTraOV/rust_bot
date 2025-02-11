@@ -57,3 +57,22 @@ class RconHandler:
         command = f'c.usergroup list {steam_id}'
         result = await self.execute_command(command)
         return result is not None and 'discord.group' in result 
+    
+    async def verify_steam_id(self, steam_id: str, verification_code: str) -> bool:
+        """Verify a user's Steam ID using the verification code"""
+        try:
+            # Get player info from server
+            command = f'playerinfo {steam_id}'
+            result = await self.execute_command(command)
+            
+            if not result:
+                return False
+                
+            # The verification code should be set as the player's name or some other
+            # verifiable information on the server. This implementation might need
+            # to be adjusted based on your specific verification requirements.
+            return verification_code in result
+            
+        except Exception as e:
+            self.logger.error(f"Error verifying Steam ID: {e}")
+            return False 

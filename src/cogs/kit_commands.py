@@ -10,7 +10,7 @@ class KitCommands(commands.Cog):
 
     @app_commands.command(
         name="kit",
-        description="Add yourself to the kit group if you have registered and verified your Steam ID"
+        description="Add yourself to the kit group if you have registered your Steam ID"
     )
     async def kit(self, interaction: discord.Interaction):
         # Defer the response since this might take a moment
@@ -23,13 +23,6 @@ class KitCommands(commands.Cog):
             if not user_data:
                 await interaction.followup.send(
                     "❌ You need to register your Steam ID first using `/register`",
-                    ephemeral=True
-                )
-                return
-            
-            if not user_data.get('verified', False):
-                await interaction.followup.send(
-                    "❌ Your Steam ID needs to be verified first",
                     ephemeral=True
                 )
                 return
@@ -93,7 +86,7 @@ class KitCommands(commands.Cog):
             
             if success:
                 await interaction.followup.send(
-                    "✅ Steam ID registered successfully! Please verify your Steam ID to use the kit command.",
+                    "✅ Steam ID registered successfully! You can now use the `/kit` command.",
                     ephemeral=True
                 )
             else:
@@ -104,6 +97,60 @@ class KitCommands(commands.Cog):
                 
         except Exception as e:
             self.logger.error(f"Error in register command: {e}")
+            await interaction.followup.send(
+                "❌ An error occurred while processing your request. Please try again later.",
+                ephemeral=True
+            )
+
+    @app_commands.command(
+        name="verify",
+        description="Verify your Steam ID by providing a verification code"
+    )
+    async def verify(
+        self,
+        interaction: discord.Interaction,
+        verification_code: str
+    ):
+        await interaction.response.defer(ephemeral=True)
+        
+        try:
+            # Get user data
+            user_data = await self.bot.database.get_user_data(str(interaction.user.id))
+            
+            if not user_data:
+                await interaction.followup.send(
+                    "❌ You need to register your Steam ID first using `/register`",
+                    ephemeral=True
+                )
+                return
+            
+            # Check if already verified
+            if user_data.get('verified', False):
+                await interaction.followup.send(
+                    "✅ Your Steam ID is already verified!",
+                    ephemeral=True
+                )
+                return
+            
+            # Verify the code matches the Steam ID
+            steam_id = user_data['steam_id']
+            is_valid = await self.bot.rcon.verify_steam_id(steam_id, verification_code)
+            
+            if is_valid:
+                # Update verification status
+                await self.bot.database.verify_user(str(interaction.user.id))
+                await interaction.followup.send(
+                    "✅ Your Steam ID has been successfully verified! You can now use the `/kit` command.",
+                    ephemeral=True
+                )
+            else:
+                await interaction.followup.send(
+                    "❌ Invalid verification code. Please make sure you're following the verification instructions.",
+                    ephemeral=True
+                )
+                
+        except Exception as e:
+            self.logger.error(f"Error in verify command: {e}")
             await interaction.followup.send(
                 "❌ An error occurred while processing your request. Please try again later.",
                 ephemeral=True
