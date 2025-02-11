@@ -18,7 +18,7 @@ class KitCommands(commands.Cog):
         
         try:
             # Get user data
-            user_data = await self.bot.db.get_user_data(str(interaction.user.id))
+            user_data = await self.bot.database.get_user_data(str(interaction.user.id))
             
             if not user_data:
                 await interaction.followup.send(
@@ -47,7 +47,7 @@ class KitCommands(commands.Cog):
             success = await self.bot.rcon.add_to_group(steam_id)
             if success:
                 # Update database
-                await self.bot.db.set_group_status(str(interaction.user.id), True)
+                await self.bot.database.set_group_status(str(interaction.user.id), True)
                 await interaction.followup.send(
                     "✅ Successfully added you to the kit group!",
                     ephemeral=True
@@ -86,7 +86,7 @@ class KitCommands(commands.Cog):
                 return
             
             # Store the Steam ID in the database
-            success = await self.bot.db.register_user(
+            success = await self.bot.database.register_user(
                 str(interaction.user.id),
                 steam_id
             )

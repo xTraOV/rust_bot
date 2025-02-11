@@ -33,12 +33,13 @@ class DatabaseManager:
     async def register_user(self, discord_id: str, steam_id: str) -> bool:
         """Register a user's Steam ID in the database"""
         try:
-            # Implementation depends on your database setup
-            # This is a placeholder for the actual database operation
-            await self.db.execute(
-                "INSERT OR REPLACE INTO users (discord_id, steam_id, verified) VALUES (?, ?, ?)",
-                (discord_id, steam_id, False)
-            )
+            data = await self._load_data()
+            data[discord_id] = {
+                'steam_id': steam_id,
+                'verified': False,
+                'in_group': False
+            }
+            await self._save_data(data)
             return True
         except Exception as e:
             logging.error(f"Error registering user: {e}")

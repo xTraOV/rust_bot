@@ -25,7 +25,7 @@ class DiscordKitBot(commands.Bot):
         self.logger = logging.getLogger('DiscordKitBot')
         
         # Initialize handlers
-        self.db = DatabaseManager()
+        self.database = DatabaseManager()
         self.rcon = RconHandler(config)
         self.config = config
 

@@ -144,3 +144,4 @@ COMMAND_PREFIX=/
 - Report issues through GitHub issues
 - Contact server administrator for RCON-related issues
 - Check Discord Developer Portal for bot token issues
+##
