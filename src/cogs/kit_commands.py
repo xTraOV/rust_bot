@@ -65,5 +65,49 @@ class KitCommands(commands.Cog):
                 ephemeral=True
             )
 
+    @app_commands.command(
+        name="register",
+        description="Register your Steam ID with the bot"
+    )
+    async def register(
+        self, 
+        interaction: discord.Interaction, 
+        steam_id: str
+    ):
+        await interaction.response.defer(ephemeral=True)
+        
+        try:
+            # Basic Steam ID validation (you might want to enhance this)
+            if not steam_id.isdigit() or len(steam_id) < 17:
+                await interaction.followup.send(
+                    "❌ Invalid Steam ID format. Please provide a valid Steam ID.",
+                    ephemeral=True
+                )
+                return
+            
+            # Store the Steam ID in the database
+            success = await self.bot.db.register_user(
+                str(interaction.user.id),
+                steam_id
+            )
+            
+            if success:
+                await interaction.followup.send(
+                    "✅ Steam ID registered successfully! Please verify your Steam ID to use the kit command.",
+                    ephemeral=True
+                )
+            else:
+                await interaction.followup.send(
+                    "❌ Failed to register Steam ID. Please try again later or contact an admin.",
+                    ephemeral=True
+                )
+                
+        except Exception as e:
+            self.logger.error(f"Error in register command: {e}")
+            await interaction.followup.send(
+                "❌ An error occurred while processing your request. Please try again later.",
+                ephemeral=True
+            )
+
 async def setup(bot):
     await bot.add_cog(KitCommands(bot)) 

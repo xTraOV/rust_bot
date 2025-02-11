@@ -3,6 +3,7 @@ import os
 from typing import Optional, Dict
 import asyncio
 from pathlib import Path
+import logging
 
 class DatabaseManager:
     def __init__(self):
@@ -30,23 +31,18 @@ class DatabaseManager:
             self.data_file.write_text(json.dumps(data, indent=2))
 
     async def register_user(self, discord_id: str, steam_id: str) -> bool:
-        """Register a new user with their Steam ID"""
-        data = await self._load_data()
-        
-        # Check if Steam ID is already registered
-        for user_data in data.values():
-            if user_data.get('steam_id') == steam_id:
-                return False
-        
-        # Add new user
-        data[discord_id] = {
-            'steam_id': steam_id,
-            'verified': False,
-            'in_group': False
-        }
-        
-        await self._save_data(data)
-        return True
+        """Register a user's Steam ID in the database"""
+        try:
+            # Implementation depends on your database setup
+            # This is a placeholder for the actual database operation
+            await self.db.execute(
+                "INSERT OR REPLACE INTO users (discord_id, steam_id, verified) VALUES (?, ?, ?)",
+                (discord_id, steam_id, False)
+            )
+            return True
+        except Exception as e:
+            logging.error(f"Error registering user: {e}")
+            return False
 
     async def get_user_data(self, discord_id: str) -> Optional[Dict]:
         """Get user data by Discord ID"""
