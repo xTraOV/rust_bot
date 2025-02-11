@@ -1,0 +1,19 @@
+discord-kit-bot/
+├── .env.example
+├── .gitignore
+├── requirements.txt
+├── main.py
+├── src/
+│   ├── __init__.py
+│   ├── bot.py
+│   ├── cogs/
+│   │   ├── __init__.py
+│   │   └── kit_commands.py
+│   ├── database/
+│   │   ├── __init__.py
+│   │   └── db_manager.py
+│   └── utils/
+│       ├── __init__.py
+│       ├── config.py
+│       └── rcon_handler.py
+└── README.md 
